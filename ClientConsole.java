@@ -47,14 +47,15 @@ public class ClientConsole implements ChatIF
   /**
    * Constructs an instance of the ClientConsole UI.
    *
+   * @param loginID The users login id.
    * @param host The host to connect to.
    * @param port The port to connect on.
    */
-  public ClientConsole(String host, int port) 
+  public ClientConsole(String loginID, String host, int port) 
   {
     try 
     {
-      client= new ChatClient(host, port, this);
+      client= new ChatClient(loginID, host, port, this);
       
       
     } 
@@ -117,18 +118,35 @@ public class ClientConsole implements ChatIF
    */
   public static void main(String[] args) 
   {
+	String loginID = "";
     String host = "";
-
-
+    int port = 0;
+    
+    //if the no arguments are given for the username set the login id to be accepted by the client which will be terminated
+    if (args.length == 0) {
+    	loginID = "#Quit Now";
+    }
     try
-    {
-      host = args[0];
+    {	
+    	//host and port optional,login required
+    	loginID = args[0];
+    	host = args[1];
+    	port = Integer.parseInt(args[2]);
+      
     }
     catch(ArrayIndexOutOfBoundsException e)
     {
+    	//if the optional values are not given set them to defaults
       host = "localhost";
+      port = DEFAULT_PORT;
     }
-    ClientConsole chat= new ClientConsole(host, DEFAULT_PORT);
+    
+    //set port to default if the argument given is not a number
+    catch(NumberFormatException ne) {
+    	port = DEFAULT_PORT;
+    }
+    //create the client console and accept inputs
+    ClientConsole chat= new ClientConsole(loginID, host, port);
     chat.accept();  //Wait for console data
   }
 }
